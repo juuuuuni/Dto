@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTO 생성기</title>
+    <style>
+        /* CSS 스타일링 코드 */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #header {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 24px;
+        }
+
+        #inputs {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        select, input {
+            padding: 5px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #output {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+     <!-- 페이지 제목 -->
+     <div id="header">
+        DTO 생성기
+    </div>
+
+    <div id="inputs">
+        <!-- 초기에 2개의 input text 칸을 생성합니다. -->
+        <div class="input-group">
+            <!-- 타입을 입력받는 select 요소 추가 -->
+            <select name="type">
+                <option value="String">String</option>
+                <option value="int">int</option>
+                <option value="long">long</option>
+                <option value="Integer">Integer</option>
+                <option value="Date">Date</option>
+            </select>
+            <input type="text" name="input2" placeholder="컬럼명(USE_YN)">
+            <button onclick="removeInputs(this)">제거</button>
+        </div>
+    </div>
+    <button onclick="addInputs()">추가</button>
+
+    <!-- 결과를 출력할 div -->
+    <div id="output"></div>
+
+    <script>
+        function addInputs() {
+            // 새로운 input 요소를 생성합니다.
+            const selectType = document.createElement("select");
+            selectType.name = "type";
+
+            const optionString = document.createElement("option");
+            optionString.value = "String";
+            optionString.text = "String";
+            selectType.appendChild(optionString);
+
+            const optionInt = document.createElement("option");
+            optionInt.value = "int";
+            optionInt.text = "int";
+            selectType.appendChild(optionInt);
+
+            const optionLong = document.createElement("option");
+            optionLong.value = "long";
+            optionLong.text = "long";
+            selectType.appendChild(optionLong);
+
+            const optionInteger = document.createElement("option");
+            optionInteger.value = "Integer";
+            optionInteger.text = "Integer";
+            selectType.appendChild(optionInteger);
+
+            const optionDate = document.createElement("option");
+            optionDate.value = "Date";
+            optionDate.text = "Date";
+            selectType.appendChild(optionDate);
+
+            const input2 = document.createElement("input");
+            input2.type = "text";
+            input2.name = "input2";
+            input2.placeholder = "컬럼명(USE_YN)";
+
+            // 생성한 input 요소와 제거 버튼을 포함한 div를 생성합니다.
+            const inputGroup = document.createElement("div");
+            inputGroup.className = "input-group";
+            inputGroup.appendChild(selectType);
+            inputGroup.appendChild(input2);
+
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "제거";
+            removeButton.onclick = function() {
+                removeInputs(this);
+            };
+            inputGroup.appendChild(removeButton);
+
+            // 생성한 div를 #inputs 요소에 추가합니다.
+            document.getElementById("inputs").appendChild(inputGroup);
+        }
+
+        function removeInputs(button) {
+            // 제거 버튼을 클릭한 div를 찾아서 제거합니다.
+            const inputGroup = button.parentElement;
+            inputGroup.remove();
+        }
+
+        function convertToCamelCase(text) {
+            // 언더스코어로 구분된 문자열을 카멜 케이스로 변환합니다.
+            const words = text.split('_');
+            let camelCase = '';
+            for (let i = 0; i < words.length; i++) {
+                const word = words[i];
+                if (i === 0) {
+                    camelCase += word.toLowerCase();
+                } else {
+                    camelCase += word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                }
+            }
+            return camelCase;
+        }
+
+        function displayValues() {
+            // 입력된 값들을 가져와서 출력합니다.
+            const inputs = document.querySelectorAll("select[name='type'], input[name='input2']");
+            let outputText = "";
+            inputs.forEach(function(input, index) {
+                if (index % 2 === 0) {
+                    // 짝수 인덱스는 타입명
+                    outputText += "private " + input.value + " ";
+                } else {
+                    // 홀수 인덱스는 컬럼명(USE_YN)으로 언더스코어를 기준으로 카멜 케이스로 변환합니다.
+                    outputText += convertToCamelCase(input.value) + ";\n";
+                }
+            });
+
+            // 결과를 출력할 div에 HTML을 설정합니다.
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = outputText.replace(/\n/g, "<br>");
+        }
+    </script>
+
+    <!-- 결과를 출력하는 버튼 -->
+    <button onclick="displayValues()">출력</button>
+</body>
+</html>
